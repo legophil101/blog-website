@@ -93,9 +93,10 @@ After deploying on Render, we encountered production-specific challenges that di
 * Gunicorn assumed the app was frozen and killed the process right before it could finish initializing.
 
 ### **Fixes Implemented**
-1. **Increased Gunicorn Timeout**
-   * Command: `gunicorn -t 120 main:app`
-   * *Result:* Gives the server 120 seconds to initialize, providing enough overhead for external DB connections.
+1. **Increased Gunicorn Timeout & Worker Optimization**
+   * Command: `gunicorn -w 1 --threads 2 -t 120 main:app`
+   * *Result:* Increased the timeout to 120 seconds to allow for slow cold-starts and database handshakes.
+   * *Memory Optimization:* Limited the app to **one worker** (`-w 1`) with **two threads** (`--threads 2`). This prevents the app from spawning multiple "clones" that exceed Render's 512MB RAM limit, stopping the `SIGKILL` loop during traffic spikes.
 2. **Verified Database URL Protocol**
    * Ensured `DATABASE_URL` uses the `postgresql://` prefix (required by SQLAlchemy 2.0+).
 3. **Added Heartbeat Route (`/ping`)**
