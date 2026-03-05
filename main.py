@@ -127,7 +127,7 @@ with app.app_context():
 
 @app.errorhandler(500)
 def internal_error(error):
-    # Pass bootstrap and current_user so the header.html can render correctly
+    # Pass current_user so the header.html can render correctly
     return render_template("500.html", current_user=current_user), 500
 
 
