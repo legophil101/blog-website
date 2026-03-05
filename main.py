@@ -6,7 +6,7 @@ from flask_gravatar import Gravatar
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Text
+from sqlalchemy import Integer, String, Text, text
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
@@ -68,8 +68,10 @@ class Base(DeclarativeBase):
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    "pool_pre_ping": True,  # Checks if the connection is alive before using it
+    "pool_pre_ping": True,  # Checks if connection is alive before using it
     "pool_recycle": 300,  # Refreshes connections every 5 minutes
+    "pool_size": 10,  # Keeps 10 connections ready to go
+    "max_overflow": 20,  # Allows extra connections during traffic spikes
 }
 
 db = SQLAlchemy(model_class=Base)
@@ -133,7 +135,14 @@ def internal_error(error):
 
 @app.route("/ping")
 def ping():
-    return "OK", 200
+    try:
+        # Executes a tiny 'SELECT 1' to verify the Supabase connection
+        db.session.execute(text('SELECT 1'))
+        return "Database Connected", 200
+    except Exception as e:
+        # Logs the error to Render so you can see why it failed
+        app.logger.error(f"Health check failed: {e}")
+        return "Database Offline", 500
 
 
 # Create an admin-only decorator
