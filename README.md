@@ -94,8 +94,8 @@ After deploying on Render, we encountered production-specific challenges that di
 
 ### **Fixes Implemented**
 1. **Increased Gunicorn Timeout & Worker Optimization**
-   * Command: `gunicorn -w 1 --threads 2 -t 120 main:app`
-   * *Result:* Increased the timeout to 120 seconds to allow for slow cold-starts and database handshakes.
+   * Command: `gunicorn -w 1 --threads 2 -t 180 main:app`
+   * *Result:* Increased the timeout to 180 seconds to allow for slow cold-starts and database handshakes.
    * *Memory Optimization:* Limited the app to **one worker** (`-w 1`) with **two threads** (`--threads 2`). This prevents the app from spawning multiple "clones" that exceed Render's 512MB RAM limit, stopping the `SIGKILL` loop during traffic spikes.
 2. **Verified Database URL Protocol**
    * Ensured `DATABASE_URL` uses the `postgresql://` prefix (required by SQLAlchemy 2.0+).
