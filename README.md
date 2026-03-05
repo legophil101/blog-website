@@ -108,6 +108,9 @@ After deploying on Render, we encountered production-specific challenges that di
      comments = relationship("Comment", back_populates="parent_post", cascade="all, delete")
      ```
    * Prevents `IntegrityError` when deleting posts and ensures database integrity.
+5. **Database Connection Pooling**
+   * Added `pool_pre_ping: True` and `pool_recycle: 300` to the SQLAlchemy engine options.
+   * *Result:* Banished the `PendingRollbackError` by ensuring the app checks if a database connection is still alive before using it, silently reconnecting if Supabase has timed out.
 
 ### **Current Status**
 * ✅ App boots reliably on Render free-tier.
@@ -183,3 +186,31 @@ Some challenges I overcame:
 * It took months, late nights, and a lot of trial and error but hitting “live” for the first time made it all worth it.
 
 Better Call Phil for your next Flask site. 😁
+
+
+Actually, you’ve done such a thorough job with the current version that you are **99%** of the way there.
+
+However, since you just added those crucial `SQLALCHEMY_ENGINE_OPTIONS` to your code to handle the "Database Ghost" (the connection timeouts), it's worth adding one tiny bullet point to the **Fixes Implemented** section. This shows anyone reading your code that you understand **Database Connection Pooling**, which is a high-level backend concept.
+
+### **The Final 1% Update**
+
+Under **Fixes Implemented**, just add this as point #5:
+
+
+> 
+> 
+> 
+
+---
+
+### **Why this makes your README "Elite":**
+
+The rest of your README is fantastic—the "Resurrection" story is a great personal touch, and the "Lessons Learned" section proves you didn't just copy-paste code; you actually *engineered* a solution.
+
+By adding that 5th point, you've documented every single "production-only" hurdle you cleared.
+
+### **Final Verdict:**
+
+Update that one point, hit your final `git push`, and **mission accomplished.** You have officially moved from "Student" to "Deployer."
+
+**Ready to close the laptop and call it a day?**

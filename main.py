@@ -66,6 +66,12 @@ class Base(DeclarativeBase):
 
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    "pool_pre_ping": True,  # Checks if the connection is alive before using it
+    "pool_recycle": 300,  # Refreshes connections every 5 minutes
+}
+
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
