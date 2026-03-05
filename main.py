@@ -68,11 +68,10 @@ class Base(DeclarativeBase):
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    "pool_pre_ping": True,   # Checks if connection is alive before every query
-    "pool_recycle": 120,     # Refresh every 2 mins (stays ahead of Supabase's 2.5m timeout)
-    "pool_timeout": 30,      # Give the handshake 30s to finish (prevents 500s on lag)
-    "pool_size": 5,          # Smaller pool is more stable on Free Tiers
-    "max_overflow": 10,      # Allow extra connections only when traffic spikes
+    "pool_pre_ping": True,
+    "pool_recycle": 300,  # Keep connections alive for 5 minutes
+    "pool_size": 10,      # Give your workers more "slots" to talk to the DB
+    "max_overflow": 20,
 }
 
 db = SQLAlchemy(model_class=Base)
@@ -124,8 +123,8 @@ class Comment(db.Model):
     parent_post = relationship("BlogPost", back_populates="comments")
 
 
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
 
 
 @app.errorhandler(500)
