@@ -30,6 +30,9 @@
     <div class="row">
       <div class="col-lg-8 col-md-10 mx-auto">
         {{ ckeditor.load() }}
+        <style>
+            .cke_notification_warning { display: none !important; }
+        </style>
         {{ ckeditor.config(name='body') }}
         {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
       </div>

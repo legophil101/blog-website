@@ -31,7 +31,12 @@ This will install the packages from the requirements.txt for this project.
 load_dotenv()  # <--- must be before os.getenv() calls
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
+# Set version BEFORE initializing CKEditor
+app.config['CKEDITOR_VERSION'] = '4.25.1-lts'
+app.config['CKEDITOR_SERVE_LOCAL'] = False
 ckeditor = CKEditor(app)
+
 Bootstrap5(app)
 
 # Configure Flask-Login
@@ -79,7 +84,7 @@ class BlogPost(db.Model):
     body: Mapped[str] = mapped_column(Text, nullable=False)
     img_url: Mapped[str] = mapped_column(String(250), nullable=False)
     # Parent relationship to the comments
-    comments = relationship("Comment", back_populates="parent_post")
+    comments = relationship("Comment", back_populates="parent_post", cascade="all, delete")
 
 
 # Create a User table for all your registered users
@@ -112,6 +117,17 @@ class Comment(db.Model):
 
 with app.app_context():
     db.create_all()
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    # Pass bootstrap and current_user so the header.html can render correctly
+    return render_template("500.html", bootstrap=Bootstrap5, current_user=current_user), 500
+
+
+@app.route("/ping")
+def ping():
+    return "OK", 200
 
 
 # Create an admin-only decorator
@@ -239,6 +255,7 @@ def add_new_post():
 
 # Use a decorator so only an admin user can edit a post
 @app.route("/edit-post/<int:post_id>", methods=["GET", "POST"])
+@admin_only
 def edit_post(post_id):
     post = db.get_or_404(BlogPost, post_id)
     edit_form = CreatePostForm(

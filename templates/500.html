@@ -1,0 +1,17 @@
+{% include "header.html" %}
+<!-- Custom 500 Page Hero -->
+<header class="masthead" style="background-image: url('https://images.unsplash.com/photo-1646725942727-9ab7d9a4b566?q=80&w=1331&auto=format&fit=crop&w=1600&q=80');">
+    <div class="container text-center py-5">
+        <h1>500: Server Error</h1>
+        <span class="subheading">Our server is taking a short nap. 😴</span>
+    </div>
+</header>
+
+<div class="container text-center my-5">
+    <p>Something went wrong on our end. Try refreshing the page, or return to the main feed.</p>
+    <a href="{{ url_for('get_all_posts') }}" class="btn btn-primary text-uppercase mt-3">
+        Return to Home
+    </a>
+</div>
+
+{% include "footer.html" %}

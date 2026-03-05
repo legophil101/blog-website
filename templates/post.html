@@ -41,6 +41,9 @@
         <!-- Comments Area -->
         <!-- Load the CKEditor -->
         {{ ckeditor.load() }}
+        <style>
+            .cke_notification_warning { display: none !important; }
+        </style>
         <!-- Configure it with the name of the form field from CommentForm -->
         {{ ckeditor.config(name='comment_text') }}
         <!-- Create the wtf quick form from CommentForm -->
