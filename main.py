@@ -228,17 +228,32 @@ def logout():
 
 @app.route('/')
 def get_all_posts():
-    # Fetch posts, authors, and comments in ONE single database trip
+    # Get the current page from the URL (default to 1)
+    page = request.args.get('page', 1, type=int)
+    posts_per_page = 5
+
+    # Calculate how many posts to skip
+    offset_value = (page - 1) * posts_per_page
+
+    # Fetch the posts for the current page
     result = db.session.execute(
         db.select(BlogPost)
         .options(joinedload(BlogPost.author))
         .order_by(BlogPost.id.desc())
-        .limit(5)  # Start with 5 to make the load feel instantaneous
+        .limit(posts_per_page)
+        .offset(offset_value)
     )
-    # .unique() is required when using joinedload to avoid duplicate post objects
     posts = result.scalars().unique().all()
-    return render_template("index.html", all_posts=posts, current_user=current_user)
 
+    # Check if there are more posts for the "Next" button
+    total_posts = db.session.scalar(db.select(db.func.count(BlogPost.id)))
+    has_next = total_posts > (page * posts_per_page)
+
+    return render_template("index.html",
+                           all_posts=posts,
+                           current_user=current_user,
+                           page=page,
+                           has_next=has_next)
 
 # Add a POST method to be able to post comments
 @app.route("/post/<int:post_id>", methods=["GET", "POST"])
