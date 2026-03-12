@@ -313,9 +313,13 @@ and maintaining database integrity.
 # Current Status
 
 ✅ App boots reliably on Render free-tier
+
 ✅ Database latency significantly reduced
+
 ✅ Posts and comments delete safely
+
 ✅ CKEditor warnings suppressed and form binding fixed
+
 ✅ Custom **500 error page** added for production errors
 
 ---
